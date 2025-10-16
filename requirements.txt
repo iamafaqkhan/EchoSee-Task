@@ -1,0 +1,9 @@
+openai-whisper
+vosk
+sounddevice
+numpy
+flask
+python-socketio
+ffmpeg-python
+noisereduce
+deepmultilingualpunctuation

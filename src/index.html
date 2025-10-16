@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>EchoSee – Live Transcription</title>
+  <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+  <style>
+    body {
+      background-color: #111;
+      color: #0f0;
+      font-family: Arial, sans-serif;
+      padding: 40px;
+    }
+    h1 { color: #0f0; }
+    #output {
+      font-size: 1.5rem;
+      margin-top: 30px;
+      white-space: pre-wrap;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎧 EchoSee – Live Captions</h1>
+  <div id="output">Listening...</div>
+
+  <script>
+    const socket = io("http://localhost:5000");
+    socket.on("connect", () => console.log("Connected to EchoSee server"));
+    socket.on("transcription", data => {
+      document.getElementById("output").innerText = data.text;
+    });
+  </script>
+</body>
+</html>
