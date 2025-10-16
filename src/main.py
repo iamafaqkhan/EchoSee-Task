@@ -22,6 +22,7 @@ SAMPLE_RATE = 16000
 BLOCKSIZE = 4000
 MODEL_SIZE = "tiny"       # Can be "tiny", "base", "small", etc.
 DEVICE = "cpu"            # Change to "cuda" if you have GPU
+BYTES_PER_SAMPLE = 2       # int16 -> 2 bytes
 
 # -----------------------------
 # LOAD WHISPER MODEL
@@ -61,11 +62,11 @@ def transcribe_stream():
             # Process audio roughly every second (SAMPLE_RATE samples * bytes per sample)
             if len(buffer) >= SAMPLE_RATE * BYTES_PER_SAMPLE:
                 try:
-                    # Ensure we only convert a whole number of int16 samples
+                    # Ensure we only convert whole int16 samples
                     bytes_available = len(buffer)
                     bytes_to_process = (bytes_available // BYTES_PER_SAMPLE) * BYTES_PER_SAMPLE
                     data_bytes = buffer[:bytes_to_process]
-                    buffer = buffer[bytes_to_process:]  # keep leftover partial bytes
+                    buffer = buffer[bytes_to_process:]
 
                     # Convert raw int16 PCM bytes to float32 numpy array in range [-1, 1]
                     audio_int16 = np.frombuffer(data_bytes, dtype=np.int16)
@@ -74,6 +75,12 @@ def transcribe_stream():
                     # 🧠 Auto-detect language (English or Urdu)
                     result = model.transcribe(audio_data, fp16=False, language=None)
                     text = result.get("text", "").strip()
+
+                    if text:
+                        print(f"🗣️ {text}")
+                        sio.emit("transcription", {"text": text})
+                except Exception as e:
+                    print("Error:", e)
 
                     if text:
                         print(f"🗣️ {text}")
